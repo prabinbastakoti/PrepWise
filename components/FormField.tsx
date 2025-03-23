@@ -16,7 +16,7 @@ const FormField = ({
   name,
   label,
   placeholder,
-  type,
+  type = 'text',
 }: FormFieldProps<T>) => {
   return (
     <Controller
