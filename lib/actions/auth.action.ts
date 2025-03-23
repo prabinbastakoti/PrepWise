@@ -27,14 +27,16 @@ export async function signUp(params: SignUpParams) {
       success: true,
       message: 'Account created successfully. Please sign in.',
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating a user', error);
 
-    if (error.code === 'auth/email-already-exists') {
-      return {
-        success: false,
-        message: 'This email is already in use.',
-      };
+    if (error instanceof Error && 'code' in error) {
+      if (error.code === 'auth/email-already-exists') {
+        return {
+          success: false,
+          message: 'This email is already in use.',
+        };
+      }
     }
 
     return {
