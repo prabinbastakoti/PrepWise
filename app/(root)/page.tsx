@@ -9,16 +9,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-const page = async () => {
+const Home = async () => {
   const user = await getCurrentUser();
 
-  const [userInterviews, latestInterviews] = await Promise.all([
+  const [userInterviews, allInterview] = await Promise.all([
     await getInterviewsByUserId(user?.id!),
     await getLatestInterviews({ userId: user?.id! }),
   ]);
 
-  const hasPastInterviews = userInterviews?.length > 0;
-  const hasUpcomingInterviews = latestInterviews?.length > 0;
+  const hasPastInterviews = userInterviews?.length! > 0;
+  const hasUpcomingInterviews = allInterview?.length! > 0;
 
   return (
     <>
@@ -49,7 +49,17 @@ const page = async () => {
         <div className='interviews-section'>
           {hasPastInterviews ? (
             userInterviews?.map((interview) => {
-              return <InterviewCard {...interview} key={interview.id} />;
+              return (
+                <InterviewCard
+                  key={interview.id}
+                  userId={user?.id}
+                  interviewId={interview.id}
+                  role={interview.role}
+                  type={interview.type}
+                  techstack={interview.techstack}
+                  createdAt={interview.createdAt}
+                />
+              );
             })
           ) : (
             <p>You haven't taken any interviews yet</p>
@@ -62,8 +72,18 @@ const page = async () => {
 
         <div className='interviews-section'>
           {hasUpcomingInterviews ? (
-            latestInterviews?.map((interview) => {
-              return <InterviewCard {...interview} key={interview.id} />;
+            allInterview?.map((interview) => {
+              return (
+                <InterviewCard
+                  key={interview.id}
+                  userId={user?.id}
+                  interviewId={interview.id}
+                  role={interview.role}
+                  type={interview.type}
+                  techstack={interview.techstack}
+                  createdAt={interview.createdAt}
+                />
+              );
             })
           ) : (
             <p>There are no new interviews available</p>
@@ -74,4 +94,4 @@ const page = async () => {
   );
 };
 
-export default page;
+export default Home;

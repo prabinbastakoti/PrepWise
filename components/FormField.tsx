@@ -8,7 +8,7 @@ interface FormFieldProps<T extends FieldValues> {
   name: Path<T>;
   label: string;
   placeholder?: string;
-  type?: 'text' | 'email' | 'password' | 'file';
+  type?: 'text' | 'email' | 'password';
 }
 
 const FormField = <T extends FieldValues>({

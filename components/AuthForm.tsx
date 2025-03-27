@@ -39,19 +39,19 @@ const AuthForm = ({ type }: { type: FormType }) => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       if (type === 'sign-up') {
-        const { name, email, password } = values;
+        const { name, email, password } = data;
 
-        const userCredentials = await createUserWithEmailAndPassword(
+        const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
           password
         );
 
         const result = await signUp({
-          uid: userCredentials.user.uid,
+          uid: userCredential.user.uid,
           name: name!,
           email,
           password,
@@ -65,18 +65,18 @@ const AuthForm = ({ type }: { type: FormType }) => {
         toast.success('Account created successfully! Please sign in.');
         router.push('/sign-in');
       } else {
-        const { email, password } = values;
+        const { email, password } = data;
 
-        const userCredentials = await signInWithEmailAndPassword(
+        const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
           password
         );
 
-        const idToken = await userCredentials.user.getIdToken();
+        const idToken = await userCredential.user.getIdToken();
 
         if (!idToken) {
-          toast.error('Sign in failed');
+          toast.error('Sign in failed. Please try again');
           return;
         }
 
@@ -144,7 +144,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
         </Form>
 
         <p className='text-center'>
-          {isSignIn ? 'New to PrepWise?' : 'Already have an account?'}
+          {isSignIn ? 'No account yet?' : 'Have an account already?'}
           <Link
             href={!isSignIn ? '/sign-in' : '/sign-up'}
             className='font-bold text-user-primary ml-1'

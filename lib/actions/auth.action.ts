@@ -3,7 +3,7 @@
 import { auth, db } from '@/firebase/admin';
 import { cookies } from 'next/headers';
 
-const ONE_WEEK = 60 * 60 * 24 * 7;
+const SESSION_DURATION = 60 * 60 * 24 * 7;
 
 export async function signUp(params: SignUpParams) {
   const { uid, name, email } = params;
@@ -14,7 +14,7 @@ export async function signUp(params: SignUpParams) {
     if (userRecord.exists) {
       return {
         success: false,
-        message: 'User already exists. Please sign in instead.',
+        message: 'User already exists. Please sign in.',
       };
     }
 
@@ -27,21 +27,19 @@ export async function signUp(params: SignUpParams) {
       success: true,
       message: 'Account created successfully. Please sign in.',
     };
-  } catch (error: unknown) {
-    console.error('Error creating a user', error);
+  } catch (error: any) {
+    console.error('Error creating user:', error);
 
-    if (error instanceof Error && 'code' in error) {
-      if (error.code === 'auth/email-already-exists') {
-        return {
-          success: false,
-          message: 'This email is already in use.',
-        };
-      }
+    if (error.code === 'auth/email-already-exists') {
+      return {
+        success: false,
+        message: 'This email is already in use.',
+      };
     }
 
     return {
       success: false,
-      message: 'Failed to create an account',
+      message: 'Failed to create account. Please try again.',
     };
   }
 }
@@ -55,17 +53,17 @@ export async function signIn(params: SignInParams) {
     if (!userRecord) {
       return {
         success: false,
-        message: 'User does not exist. Create an account instead.',
+        message: 'User does not exist. Create an account.',
       };
     }
 
     await setSessionCookie(idToken);
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log('');
 
     return {
       success: false,
-      message: 'Failed to log into an account.',
+      message: 'Failed to log into account. Please try again',
     };
   }
 }
@@ -74,11 +72,11 @@ export async function setSessionCookie(idToken: string) {
   const cookieStore = await cookies();
 
   const sessionCookie = await auth.createSessionCookie(idToken, {
-    expiresIn: ONE_WEEK * 1000,
+    expiresIn: SESSION_DURATION * 1000,
   });
 
   cookieStore.set('session', sessionCookie, {
-    maxAge: ONE_WEEK,
+    maxAge: SESSION_DURATION,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     path: '/',
@@ -118,4 +116,10 @@ export async function isAuthenticated() {
   const user = await getCurrentUser();
 
   return !!user;
+}
+
+export async function signOut() {
+  const cookieStore = await cookies();
+
+  cookieStore.delete('session');
 }

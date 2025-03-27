@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
-const page = async ({ params }: RouteParams) => {
+const InterviewDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
 
   const user = await getCurrentUser();
@@ -49,4 +49,4 @@ const page = async ({ params }: RouteParams) => {
   );
 };
 
-export default page;
+export default InterviewDetails;

@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
-const page = async ({ params }: RouteParams) => {
+const Feedback = async ({ params }: RouteParams) => {
   const { id } = await params;
   const user = await getCurrentUser();
 
@@ -113,4 +113,4 @@ const page = async ({ params }: RouteParams) => {
   );
 };
 
-export default page;
+export default Feedback;
